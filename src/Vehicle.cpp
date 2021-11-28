@@ -83,7 +83,7 @@ void Vehicle::drive()
                 ftrEntryGranted.get();
 
                 // slow down and set intersection flag
-                _speed /= 10.0;
+                _speed /= 5.0;
                 hasEnteredIntersection = true;
             }
 
@@ -118,7 +118,7 @@ void Vehicle::drive()
                 this->setCurrentStreet(nextStreet);
 
                 // reset speed and intersection flag
-                _speed *= 10.0;
+                _speed *= 5.0;
                 hasEnteredIntersection = false;
             }
 
