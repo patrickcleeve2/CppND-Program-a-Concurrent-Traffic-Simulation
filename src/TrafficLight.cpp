@@ -23,7 +23,6 @@ void MessageQueue<T>::send(T &&msg)
 
 /* Implementation of class "TrafficLight" */
 
-/*
 TrafficLight::TrafficLight()
 {
     _currentPhase = TrafficLightPhase::red;
@@ -43,29 +42,47 @@ TrafficLightPhase TrafficLight::getCurrentPhase()
 
 void TrafficLight::simulate()
 {
-    // FP.2b : Finally, the private method „cycleThroughPhases“ should be started in a thread when the public method „simulate“ is called. To do this, use the thread queue in the base class.
+    // FP.2b : Finally, the private method „cycleThroughPhases“ should be started in a thread when the public method „simulate“ is called.
+    // To do this, use the thread queue in the base class.
+    threads.emplace_back(&TrafficLight::cycleThroughPhases, this);
 }
-*/
+
 // virtual function which is executed in a thread
 void TrafficLight::cycleThroughPhases()
 {
     // FP.2a : Implement the function with an infinite loop that measures the time between two loop cycles
-    // and toggles the current phase of the traffic light between red and green and sends an update method
-    // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds.
+    // and toggles the current phase of the traffic light between red and green
+    // and sends an update method to the message queue using move semantics.
+    // The cycle duration should be a random value between 4 and 6 seconds.
     // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles.
-    
-    auto startTime = std::chrono::high_resolution_clock::now(); 
+
     while (true)
     {
+        auto startTime = std::chrono::high_resolution_clock::now();
 
         std::cout << "WHILE LOOP " << std::endl;
-        _currentPhase = (_currentPhase == TrafficLightPhase::Red ? TrafficLightPhase::Green: TrafficLightPhase::Red);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        auto endTime = std::chrono::high_resolution_clock::now(); 
+
+        // toggle current phase of traffic light
+        _currentPhase = (_currentPhase == TrafficLightPhase::red ? TrafficLightPhase::green : TrafficLightPhase::red);
+
+        // send an update to the message queue using move semantics
+        // TODO: create message queue?
+        // _queue.
+
+        // random cycle duration between 4 and 6 seconds
+        std::random_device device;
+        std::mt19937 rng(device());
+        std::uniform_int_distribution<std::mt19937::result_type> dist6(4, 6);
+        auto cycleDuration = dist6(rng);
+        std::cout << "DURATION: " << cycleDuration << std::endl;
+        // https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+
+        // wait between cycles
+        std::this_thread::sleep_for(std::chrono::seconds(cycleDuration));
 
         // ref: https://www.techiedelight.com/measure-elapsed-time-program-chrono-library/
-        std::cout << "Time Since: " << std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-
-        // _queue ?
+        auto endTime = std::chrono::high_resolution_clock::now();
+        auto cycleTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+        std::cout << "Time Since: " << cycleTime << std::endl;
     }
 }

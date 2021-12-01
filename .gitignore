@@ -1,3 +1,5 @@
 .github/**
 build/*
 .vscode/*
+src/a.out
+src/test.cpp
