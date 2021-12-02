@@ -4,7 +4,6 @@
 
 /* Implementation of class "MessageQueue" */
 
-
 template <typename T>
 T MessageQueue<T>::receive()
 {
@@ -14,14 +13,14 @@ T MessageQueue<T>::receive()
 
     // wait for new messages
     std::unique_lock<std::mutex> uLock(_mutex);
-    _cond.wait(uLock, [this] {return !_queue.empty(); });  // from class examples
+    _cond.wait(uLock, [this]
+               { return !_queue.empty(); }); // from class examples
 
     // pull them from the queue
     T msg = std::move(_queue.back());
     _queue.pop_back();
 
     return msg;
-
 }
 
 template <typename T>
@@ -32,9 +31,8 @@ void MessageQueue<T>::send(T &&msg)
 
     std::lock_guard<std::mutex> uLock(_mutex);
     _queue.push_back(std::move(msg));
-    _cond.notify_one(); 
+    _cond.notify_one();
 }
-
 
 /* Implementation of class "TrafficLight" */
 
@@ -49,15 +47,16 @@ void TrafficLight::waitForGreen()
     // runs and repeatedly calls the receive function on the message queue.
     // Once it receives TrafficLightPhase::green, the method returns.
 
-    while (true) {
-        
+    while (true)
+    {
+
         std::cout << "WAITING FOR GREEN " << std::endl;
         auto phase = _queue.receive();
 
-        if (phase == TrafficLightPhase::green) {
+        if (phase == TrafficLightPhase::green)
+        {
             return;
         }
-
     }
 }
 
@@ -82,32 +81,42 @@ void TrafficLight::cycleThroughPhases()
     // The cycle duration should be a random value between 4 and 6 seconds.
     // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles.
 
+    // Adapted from Vehicle.cpp as suggested in rubric
+
+    // random cycle duration between 4 and 6 seconds
+    // https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+    std::random_device device;
+    std::mt19937 rng(device());
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(4000, 6000); // ms
+    auto cycleDuration = dist6(rng);
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> lastUpdate;
+
+    // initialise cycle clock
+    // ref: https://www.techiedelight.com/measure-elapsed-time-program-chrono-library/
+    lastUpdate = std::chrono::high_resolution_clock::now();
+
     while (true)
     {
-        auto startTime = std::chrono::high_resolution_clock::now();
+        // wait 1ms between cycles
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-        // std::cout << "WHILE LOOP " << std::endl;
+        // compute time since cycle update
+        long timeSinceLastUpdate = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastUpdate).count();
+        std::cout << "TIME SINCE UPDATE: " << timeSinceLastUpdate << " / " << cycleDuration << std::endl;
+        if (timeSinceLastUpdate >= cycleDuration)
+        {
 
-        // toggle current phase of traffic light
-        _currentPhase = (_currentPhase == TrafficLightPhase::red ? TrafficLightPhase::green : TrafficLightPhase::red);
+            // toggle current phase of traffic light
+            _currentPhase = (_currentPhase == TrafficLightPhase::red ? TrafficLightPhase::green : TrafficLightPhase::red);
 
-        // send an update to the message queue using move semantics
-        _queue.send(std::move(_currentPhase));
+            // send an update to the message queue using move semantics
+            _queue.send(std::move(_currentPhase));
 
-        // random cycle duration between 4 and 6 seconds
-        std::random_device device;
-        std::mt19937 rng(device());
-        std::uniform_int_distribution<std::mt19937::result_type> dist6(4, 6);
-        auto cycleDuration = dist6(rng);
-        std::cout << "DURATION: " << cycleDuration << std::endl;
-        // https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+            // reset cycle clock
+            lastUpdate = std::chrono::high_resolution_clock::now();
+        }
 
-        // wait between cycles
-        std::this_thread::sleep_for(std::chrono::seconds(cycleDuration));
 
-        // ref: https://www.techiedelight.com/measure-elapsed-time-program-chrono-library/
-        auto endTime = std::chrono::high_resolution_clock::now();
-        auto cycleTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-        // std::cout << "Time Since: " << cycleTime << std::endl;
     }
 }
