@@ -4,6 +4,8 @@
 #include "Intersection.h"
 #include "Vehicle.h"
 
+const int INTERSECTION_SLOWDOWN = 1;
+
 Vehicle::Vehicle()
 {
     _currStreet = nullptr;
@@ -83,7 +85,7 @@ void Vehicle::drive()
                 ftrEntryGranted.get();
 
                 // slow down and set intersection flag
-                _speed /= 5.0;
+                _speed /= INTERSECTION_SLOWDOWN;
                 hasEnteredIntersection = true;
             }
 
@@ -118,7 +120,7 @@ void Vehicle::drive()
                 this->setCurrentStreet(nextStreet);
 
                 // reset speed and intersection flag
-                _speed *= 5.0;
+                _speed *= INTERSECTION_SLOWDOWN;
                 hasEnteredIntersection = false;
             }
 
