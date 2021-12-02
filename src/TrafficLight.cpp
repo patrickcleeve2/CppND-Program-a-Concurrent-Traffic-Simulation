@@ -47,17 +47,9 @@ void TrafficLight::waitForGreen()
     // runs and repeatedly calls the receive function on the message queue.
     // Once it receives TrafficLightPhase::green, the method returns.
 
-    while (true)
-    {
-
-        std::cout << "WAITING FOR GREEN " << std::endl;
-        auto phase = _queue.receive();
-
-        if (phase == TrafficLightPhase::green)
-        {
-            return;
-        }
-    }
+    while (_queue.receive() != TrafficLightPhase::green) {}
+    
+    return;
 }
 
 TrafficLightPhase TrafficLight::getCurrentPhase()
@@ -103,7 +95,7 @@ void TrafficLight::cycleThroughPhases()
 
         // compute time since cycle update
         long timeSinceLastUpdate = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastUpdate).count();
-        std::cout << "TIME SINCE UPDATE: " << timeSinceLastUpdate << " / " << cycleDuration << std::endl;
+        // std::cout << "TIME SINCE UPDATE: " << timeSinceLastUpdate << " / " << cycleDuration << std::endl;
         if (timeSinceLastUpdate >= cycleDuration)
         {
 
@@ -116,7 +108,5 @@ void TrafficLight::cycleThroughPhases()
             // reset cycle clock
             lastUpdate = std::chrono::high_resolution_clock::now();
         }
-
-
     }
 }
