@@ -70,8 +70,7 @@ void TrafficLight::cycleThroughPhases()
         _currentPhase = (_currentPhase == TrafficLightPhase::red ? TrafficLightPhase::green : TrafficLightPhase::red);
 
         // send an update to the message queue using move semantics
-        // TODO: create message queue?
-        // _queue.
+        _queue.send(std::move(_currentPhase));
 
         // random cycle duration between 4 and 6 seconds
         std::random_device device;
