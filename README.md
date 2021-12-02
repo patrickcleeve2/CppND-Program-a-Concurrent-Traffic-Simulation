@@ -1,5 +1,19 @@
 # CPPND: Program a Concurrent Traffic Simulation
 
+Concurrent, thread-safe traffic simulation implemented using message queues. Vehicles will wait at an intersection if the light is red, or there is another vehicle in the intersection. Vehicles are added to the intersections queue and wait until they are pulled through by the intersection. The intersection waits for the traffic light to turn green before allowing vehicles through. 
+
+<figure>
+  <img src="data/nyc.gif" alt="NYC" style="width:100%">
+  <figcaption style="text-align: center;">NYC Solution</figcaption>
+</figure>
+
+<figure>
+  <img src="data/paris.gif" alt="Paris" style="width:100%">
+  <figcaption style="text-align: center;">Paris Solution</figcaption>
+</figure>
+
+
+## Udacity Content
 <img src="data/traffic_simulation.gif"/>
 
 This is the project for the fourth course in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213): Concurrency. 
