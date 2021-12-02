@@ -147,5 +147,7 @@ bool Intersection::trafficLightIsGreen()
        return false;
    */
 
+  // TODO: need to uncomment this: https://knowledge.udacity.com/questions/753705
+
   return true; // makes traffic light permanently green
 } 
