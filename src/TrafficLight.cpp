@@ -50,7 +50,8 @@ void TrafficLight::waitForGreen()
     // Once it receives TrafficLightPhase::green, the method returns.
 
     while (true) {
-
+        
+        std::cout << "WAITING FOR GREEN " << std::endl;
         auto phase = _queue.receive();
 
         if (phase == TrafficLightPhase::green) {
@@ -69,7 +70,7 @@ void TrafficLight::simulate()
 {
     // FP.2b : Finally, the private method „cycleThroughPhases“ should be started in a thread when the public method „simulate“ is called.
     // To do this, use the thread queue in the base class.
-    threads.emplace_back(&TrafficLight::cycleThroughPhases, this);
+    threads.emplace_back(&TrafficLight::cycleThroughPhases, this); // ref: https://knowledge.udacity.com/questions/743874
 }
 
 // virtual function which is executed in a thread
@@ -85,7 +86,7 @@ void TrafficLight::cycleThroughPhases()
     {
         auto startTime = std::chrono::high_resolution_clock::now();
 
-        std::cout << "WHILE LOOP " << std::endl;
+        // std::cout << "WHILE LOOP " << std::endl;
 
         // toggle current phase of traffic light
         _currentPhase = (_currentPhase == TrafficLightPhase::red ? TrafficLightPhase::green : TrafficLightPhase::red);
@@ -107,6 +108,6 @@ void TrafficLight::cycleThroughPhases()
         // ref: https://www.techiedelight.com/measure-elapsed-time-program-chrono-library/
         auto endTime = std::chrono::high_resolution_clock::now();
         auto cycleTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-        std::cout << "Time Since: " << cycleTime << std::endl;
+        // std::cout << "Time Since: " << cycleTime << std::endl;
     }
 }
